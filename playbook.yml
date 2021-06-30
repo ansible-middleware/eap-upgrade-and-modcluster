@@ -15,10 +15,6 @@
     ansible_distribution_version: 7.9
     #####
 
-    httpd:
-      name: jbcs-httpd24
-      nossl: true
-
     jboss_user: jboss
     jboss_group: jboss
     jboss_install_dir: "{{ jboss_home | dirname }}"
@@ -31,6 +27,7 @@
     - wildfly.jcliff
   roles:
     - sabre1041.redhat-csp-download
+    - jb_httpd
     - jcliff
   tasks:
     - assert:
@@ -89,25 +86,6 @@
       vars:
         package_name: "{{ item }}"
       loop: "{{ rhel_version_specific_packages }}"
-
-
-
-    - name: "Install HTTPd"
-      command:
-        cmd: yum groupinstall -y "{{ httpd.name }}"
-        creates: "/opt/rh/{{ httpd.name }}"
-
-    - name: "Disable HTTPd SSL support"
-      command:
-        cmd: "yum remove -y {{ httpd.name }}-mod_ssl"
-      when:
-        - httpd is defined
-        - httpd.nossl is defined
-
-    - name:
-      service:
-        name: "{{ httpd.name }}-httpd"
-        state: started
 
     - group:
         name: "{{ jboss_group }}"
