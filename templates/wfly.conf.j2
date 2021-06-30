@@ -1,0 +1,11 @@
+WILDFLY_SERVER_CONFIG={{ wildfly.config.name }}
+
+WILDFLY_OPTS=-Djboss.server.config.dir={{ wildfly.home }}/standalone/configuration/ {% if wildfly.basedir_prefix is defined %}-Djboss.server.base.dir={{ wildfly.basedir_prefix }}{% endif %} -Djboss.tx.node.id={{ instance_name }} {% if wildfly.port_range_offset is defined %} -Djboss.socket.binding.port-offset={{ wildfly.port_range_offset }}{% endif %} -Djboss.node.name={{ instance_name }}
+
+{% if wildfly.bind_addr is defined %}
+WILDFLY_BIND={{ wildfly.bind_addr }}
+{% endif %}
+WILDFLY_HOME={{ wildfly.home }}
+{% if wildfly.pidfile is defined %}
+JBOSS_PIDFILE={{ wildfly.pidfile }}.pid
+{% endif %}
