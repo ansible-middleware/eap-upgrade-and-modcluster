@@ -1,0 +1,72 @@
+---
+- group:
+    name: "{{ jboss_group }}"
+    state: present
+
+- user:
+    name: "{{ jboss_user }}"
+    state: present
+
+- assert:
+    that:
+      - rhn_username is defined
+      - rhn_password is defined
+      - jboss_home is defined
+      - jboss_home | length > 0
+    quiet: true
+
+- file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ jboss_install_dir }}"
+    - "{{ app_repository }}"
+
+- name: "Install EAP with zipfile from RHN into JBOSS_HOME {{ jboss_home }}"
+  redhat_csp_download:
+    url: "{{ rhn_eap_download_url }}"
+    dest: "{{  eap_zipfile }}"
+    username: "{{ rhn_username }}"
+    password: "{{ rhn_password }}"
+  no_log: "{{ log_rhn_output | default('yes') }}"
+
+- stat:
+    path: "{{ jboss_home }}"
+  register: path_to_jboss_home
+
+- unarchive:
+    src: "{{ eap_zipfile }}"
+    dest: "{{ jboss_install_dir }}"
+    owner: "{{ jboss_user }}"
+    group: "{{ jboss_group }}"
+  when:
+    - path_to_jboss_home is defined
+    - path_to_jboss_home.stat is defined
+    - not path_to_jboss_home.stat.exists
+
+- include_tasks: tasks/set-up-wildfy-service.yml
+  vars:
+    wildfly:
+      home: "{{ jboss_home }}"
+      user: "{{ jboss_user }}"
+      group: "{{ jboss_group }}"
+      pidfile: "{{ jboss_home }}/jboss.pid"
+      port_range_offset: "{{ eap_port_range_shift }}"
+      instance_name: "{{ eap_instance_name }}"
+      config:
+        name: garanti.xml
+        base: standalone-ha.xml
+
+
+- name: Wait for management port "{{ 9990 + eap_port_range_shift }}" to be open"
+  wait_for:
+    port: "{{ 9990 + eap_port_range_shift }}"
+    delay: 5
+
+- debug:
+    msg: "Run JCliff"
+  changed_when: true
+  notify:
+    - "JCliff"
+  when:
+    - run_jcliff is defined

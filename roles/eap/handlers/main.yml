@@ -1,0 +1,8 @@
+---
+- name: "Reload Wildfly"
+  command: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command=':reload'"
+
+- name: "Restart Systemd Service"
+  service:
+     name: "{{ eap_instance_name }}"
+     state: restarted
