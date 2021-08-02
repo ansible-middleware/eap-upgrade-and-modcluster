@@ -3,7 +3,7 @@
 readonly JCLIFF_INSTALL_DIR=${JCLIFF_INSTALL_DIR:-'/root/jcliff.git'}
 readonly JCLIFF_GIT_URL=${JCLIFF_GIT_URL:-'https://github.com/wildfly-extras/ansible_collections_jcliff.git'}
 
-subscription-manager refresh
+#subscription-manager refresh
 yum install -y git
 
 git clone "${JCLIFF_GIT_URL}" "${JCLIFF_INSTALL_DIR}"

@@ -1,0 +1,40 @@
+---
+- assert:
+    that:
+      - jboss_home is defined
+      - management_port is defined
+      - app is defined
+      - app.name is defined
+      - app.path is defined
+    quiet: true
+
+- set_fact:
+    management_port: "{{ management_port | default('9990') }}"
+
+- debug:
+    msg: "{{ app.name }}"
+
+- jcliff:
+    wfly_home: "{{ jboss_home }}"
+    management_port: "{{ management_port }}"
+    timeout: 7000
+    subsystems:
+      - system_properties:
+          - name: JBOSS_EAP_HOME_FOLDER
+            value: "{{ jboss_home | basename }}"
+      - deployments:
+          - name: "{{ app.name }}"
+            path: "{{ app.path }}"
+      - datasources:
+          - name: ExampleDS2
+            use_java_context: 'true'
+            jndi_name: java:jboss/datasources/ExampleDS2
+            connection_url: "jdbc:h2:mem:test2;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+            driver_name: h2
+      - interfaces:
+          - name: internal
+            inet_address: '127.0.0.1'
+          - name: public
+            inet_address: '127.0.0.1'
+          - name: unsecure
+            inet_address: '127.0.0.1'
