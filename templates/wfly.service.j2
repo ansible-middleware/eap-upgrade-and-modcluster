@@ -8,7 +8,7 @@ Environment=LAUNCH_JBOSS_IN_BACKGROUND=1
 EnvironmentFile=-/etc/{{ instance_name }}.conf
 User={{ wildfly.user }}
 Group={{ wildfly.group }}
-PIDFile={{ instance_name }}.pid
+PIDFile={{ jboss_home}}/{{ instance_name }}.pid
 ExecStart={{ wildfly.home }}/bin/standalone.sh -c $WILDFLY_SERVER_CONFIG {% if wildfly.bind_addr is defined %}-b $WILDFLY_BIND{% endif %} $WILDFLY_OPTS
 
 [Install]
