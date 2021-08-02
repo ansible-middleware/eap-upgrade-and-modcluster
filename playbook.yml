@@ -1,18 +1,19 @@
 ---
 - hosts: all
-  gather_facts: false
+  gather_facts: true
   vars:
     app_repository: /opt/apps
-    app_name: simple-webapp
-    app_filename: "{{ app_name }}.war"
+    app_name: info
+    app_version: 1.0
+    app_filename: "{{ app_name }}-{{ app_version }}.war"
     app_url: "http://people.redhat.com/~rpelisse/{{ app_filename }}"
     app_path: "{{ app_repository }}/{{ app_filename }}"
 
     # if gather_facts is set to true, the following variables can be removed
-    ansible_distribution: RedHat
-    ansible_os_family: RedHat
-    ansible_pkg_mgr: yum
-    ansible_distribution_version: 7.9
+#    ansible_distribution: RedHat
+#    ansible_os_family: RedHat
+#    ansible_pkg_mgr: yum
+#    ansible_distribution_version: 7.9
     #####
 
     jboss_user: jboss
@@ -24,12 +25,13 @@
     # To deploy 7.3 instead of 7.2: -e upgrade_eap_software_id=80101
     rhn_eap_download_url: "https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId={{ eap_software_id }}"
   collections:
-    - wildfly.jcliff
+    - middleware_automation.redhat_csp_download
+    - middleware_automation.jcliff
   roles:
-    - sabre1041.redhat-csp-download
+    - redhat_csp_download
     - jb_httpd
     - jcliff
-  tasks:
+  pre_tasks:
     - assert:
         that:
           - ansible_distribution is defined
@@ -81,12 +83,14 @@
         - unzip
         - zip
         - java-1.8.0-openjdk
+        - mailcap
 
     - include_tasks: tasks/fastpackage.yml
       vars:
         package_name: "{{ item }}"
       loop: "{{ rhel_version_specific_packages }}"
 
+  tasks:
     - group:
         name: "{{ jboss_group }}"
         state: present
@@ -143,30 +147,27 @@
           instance_name: "{{ eap_instance_name }}"
           config:
             name: garanti.xml
-            base: standalone.xml
+            base: standalone-ha.xml
 
     - name: "Download a demo app to deploy"
       get_url:
         url: "{{ app_url }}"
         dest: "{{ app_path }}"
+      notify:
+        - "JCliff"
 
-    - jcliff:
-        wfly_home: "{{ jboss_home }}"
-        management_port: "{{ 9990 + eap_port_range_shift }}"
-        timeout: 7000
-        subsystems:
-          - system_properties:
-              - name: JBOSS_EAP_HOME_FOLDER
-                value: "{{ jboss_home | basename }}"
-          - deployments:
-              - name: "{{ app_name }}"
-                path: "{{ app_path }}"
-          - datasources:
-              - name: ExampleDS2
-                use_java_context: 'true'
-                jndi_name: java:jboss/datasources/ExampleDS2
-                connection_url: "jdbc:h2:mem:test2;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
-                driver_name: h2
+    - name: Wait for management port "{{ 9990 + eap_port_range_shift }}" to be open"
+      wait_for:
+        port: "{{ 9990 + eap_port_range_shift }}"
+        delay: 5
+
+    - debug:
+        msg: "Run JCliff"
+      changed_when: true
+      notify:
+        - "JCliff"
+      when:
+        - run_jcliff is defined
 
   handlers:
     - name: "Reload Wildfly"
@@ -176,3 +177,11 @@
       service:
          name: "{{ eap_instance_name }}"
          state: restarted
+
+    - name: "JCliff"
+      include_tasks: tasks/jcliff.yml
+      vars:
+        management_port: "{{ 9990 + eap_port_range_shift }}"
+        app:
+          name: "{{ app_name }}-{{ app_version }}.war"
+          path: "{{ app_path }}"
