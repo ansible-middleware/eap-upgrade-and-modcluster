@@ -28,7 +28,6 @@
     - middleware_automation.redhat_csp_download
     - middleware_automation.jcliff
   roles:
-    - redhat_csp_download
     - jb_httpd
     - jcliff
     - eap
@@ -37,6 +36,12 @@
         that:
           - ansible_distribution is defined
           - ansible_distribution == "RedHat"
+
+    - name: "Ensures required packages are installed"
+      include_role:
+        name: redhat_csp_download
+      when:
+      - not assumed_installed is defined
 
     - set_fact:
          eap_port_range_shift: 0
