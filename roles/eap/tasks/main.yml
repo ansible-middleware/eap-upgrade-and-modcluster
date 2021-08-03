@@ -22,6 +22,10 @@
     - "{{ jboss_install_dir }}"
     - "{{ app_repository }}"
 
+- stat:
+    path: "{{ jboss_home }}/bin/standalone.sh"
+  register: is_jboss_already_installed
+
 - name: "Install EAP with zipfile from RHN into JBOSS_HOME {{ jboss_home }}"
   redhat_csp_download:
     url: "{{ rhn_eap_download_url }}"
@@ -29,6 +33,10 @@
     username: "{{ rhn_username }}"
     password: "{{ rhn_password }}"
   no_log: "{{ log_rhn_output | default('yes') }}"
+  when:
+    - is_jboss_already_installed is defined
+    - is_jboss_already_installed.stat is defined
+    - not is_jboss_already_installed.stat.exists
 
 - stat:
     path: "{{ jboss_home }}"
