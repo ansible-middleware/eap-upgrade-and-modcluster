@@ -67,11 +67,18 @@
         - zip
         - java-1.8.0-openjdk
         - mailcap
+  tasks:
+    - name: "Fix JCliff standard-sockets rule"
+      template:
+        src: templates/standard-sockets
+        dest: /usr/share/jcliff/rules/standard-sockets
 
-    - include_tasks: tasks/fastpackage.yml
-      vars:
-        package_name: "{{ item }}"
-      loop: "{{ rhel_version_specific_packages }}"
+    - name: "Force app redeploy"
+      file:
+        path: "{{ app_path }}"
+        state: absent
+      when:
+        - app_redeploy is defined
 
     - name: "Download a demo app to deploy"
       get_url:
@@ -79,7 +86,6 @@
         dest: "{{ app_path }}"
       notify:
         - "JCliff"
-  tasks:
 
   handlers:
     - name: "JCliff"
