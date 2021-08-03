@@ -51,7 +51,6 @@
     force: no
   notify:
     - "Restart Systemd Service"
-    - "JCliff"
 
 - name: "Deploy Systemd configuration for Wildfly service"
   template:
@@ -82,5 +81,3 @@
     name: "{{ instance_name }}"
     state: started
     enabled: yes
-  notify:
-    - "JCliff"

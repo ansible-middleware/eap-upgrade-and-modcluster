@@ -1,0 +1,2 @@
+---
+- command: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command=':reload'"

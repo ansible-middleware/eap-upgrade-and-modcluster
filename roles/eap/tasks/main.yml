@@ -64,19 +64,3 @@
       config:
         name: eap.xml
         base: standalone-ha.xml
-
-- set_fact:
-    eap_management_port: "{{ 9990 + eap_port_range_shift }}"
-
-- name: Wait for management port "{{ eap_management_port }}" to be open"
-  wait_for:
-    port: "{{ eap_management_port }}"
-    delay: 5
-
-- debug:
-    msg: "Run JCliff"
-  changed_when: true
-  notify:
-    - "JCliff"
-  when:
-    - run_jcliff is defined

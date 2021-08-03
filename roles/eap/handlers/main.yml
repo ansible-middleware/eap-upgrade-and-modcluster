@@ -1,11 +1,9 @@
 ---
 - name: "Reload Wildfly"
-  command: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command=':reload'"
+  include_tasks: tasks/reload.yml
 
 - name: "Restart Systemd Service"
-  service:
-     name: "{{ eap_instance_name }}"
-     state: restarted
+  include_tasks: tasks/restart_eap.yml
 
 - name: "Activate modcluster"
   include_tasks: tasks/modcluster.yml

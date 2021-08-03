@@ -7,6 +7,11 @@
 - set_fact:
     jboss_proxies: "{{ jboss_proxies_list | default('proxy1') }}"
 
+- name: "Check if EAP management port is open"
+  wait_for:
+    port: 9990
+    delay: 20
+
 - name: "Check if mod_cluster is properly activated"
   command:
     cmd: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command='/subsystem=modcluster/proxy=default:read-attribute(name=proxies)'"
@@ -24,5 +29,5 @@
   changed_when: False
   when:
     - not jboss_proxies in (mod_cluster_state.stdout_lines | string)
-  notify:
-    - "Restart Systemd Service"
+
+- include_tasks: tasks/reload.yml

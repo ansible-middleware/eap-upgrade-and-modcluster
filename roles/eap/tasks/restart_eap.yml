@@ -1,0 +1,5 @@
+---
+- name: "Restart Systemd Service"
+  service:
+     name: "{{ eap_instance_name }}"
+     state: restarted

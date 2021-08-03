@@ -11,6 +11,10 @@
 - set_fact:
     management_port: "{{ management_port | default('9990') }}"
 
+- wait_for:
+    port: "{{ management_port }}"
+    delay: 0
+
 - debug:
     msg: "{{ app.name }}"
 
@@ -57,4 +61,10 @@
               interface: internal
               port: '9993'
   notify:
-     "Activate modcluster"
+    - "Restart Systemd Service"
+
+- meta: flush_handlers
+
+- include_role:
+    name: eap
+    tasks_from: modcluster.yml
