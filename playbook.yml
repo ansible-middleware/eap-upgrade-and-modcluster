@@ -103,6 +103,7 @@
     - get_url:
         url: "{{ item.url }}"
         dest: "{{ item.result }}"
+      changed_when: False
       loop:
         - { url: 'http://localhost:8080/info/', result: /tmp/jboss.txt }
         - { url: 'http://localhost/info/', result: /tmp/httpd.txt }

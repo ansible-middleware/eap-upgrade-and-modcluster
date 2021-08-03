@@ -1,2 +1,3 @@
 ---
 - command: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command=':reload'"
+  changed_when: False
