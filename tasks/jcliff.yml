@@ -38,3 +38,20 @@
             inet_address: '127.0.0.1'
           - name: unsecure
             inet_address: '127.0.0.1'
+      - standard_sockets:
+          socket_binding:
+            - name: ajp
+              interface: internal
+              port: '8009'
+            - name: http
+              interface: public
+              port: '8080'
+            - name: https
+              interface: public
+              port: '8443'
+            - name: management-http
+              interface: internal
+              port: '9990'
+            - name: management-https
+              interface: internal
+              port: '9993'
