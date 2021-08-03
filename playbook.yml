@@ -59,24 +59,6 @@
          path: "{{ jboss_install_dir }}"
          state: directory
 
-    - debug:
-        msg: "version: {{ ansible_distribution_version }}"
-
-    - set_fact:
-        rhel_version_specific_packages:
-          - python-lxml
-          - python-requests
-      when:
-        - ansible_distribution_version is defined
-        - ansible_distribution_version is version('7.9','>=')
-
-    - set_fact:
-        rhel_version_specific_packages:
-        - python3-lxml
-      when:
-        - ansible_distribution_version is defined
-        - ansible_distribution_version is version('8.4','>=')
-
     - include_tasks: tasks/fastpackage.yml
       vars:
         package_name: "{{ item }}"
