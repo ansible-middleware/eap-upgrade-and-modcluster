@@ -56,3 +56,5 @@
             - name: management-https
               interface: internal
               port: '9993'
+  notify:
+     "Activate modcluster"
