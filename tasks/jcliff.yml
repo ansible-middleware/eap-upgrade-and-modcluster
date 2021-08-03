@@ -18,7 +18,7 @@
     wfly_home: "{{ jboss_home }}"
     management_port: "{{ management_port }}"
     rule_file: rules
-    timeout: 7000
+    timeout: 14000
     subsystems:
       - system_properties:
           - name: JBOSS_EAP_HOME_FOLDER
