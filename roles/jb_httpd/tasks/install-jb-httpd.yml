@@ -99,7 +99,7 @@
 - name: "Wait for all used ports to be open"
   wait_for:
     port: "{{ item }}"
-    delay: 5
+    delay: 0
   loop:
     - 80
     - 6666
