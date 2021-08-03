@@ -54,7 +54,7 @@
       port_range_offset: "{{ eap_port_range_shift }}"
       instance_name: "{{ eap_instance_name }}"
       config:
-        name: garanti.xml
+        name: eap.xml
         base: standalone-ha.xml
 
 
