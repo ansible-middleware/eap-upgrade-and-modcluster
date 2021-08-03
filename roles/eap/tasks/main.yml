@@ -79,6 +79,8 @@
 
 - debug:
     msg: "{{ mod_cluster_state.stdout_lines | string }}"
+  when:
+    - mod_cluster_state_display is defined
 
 - name: "Activate mod_cluster on EAP"
   command:
