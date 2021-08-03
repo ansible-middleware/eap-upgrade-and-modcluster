@@ -30,8 +30,8 @@
   roles:
     - redhat_csp_download
     - jb_httpd
-    - eap
     - jcliff
+    - eap
   pre_tasks:
     - assert:
         that:
