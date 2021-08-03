@@ -59,14 +59,16 @@
          path: "{{ jboss_install_dir }}"
          state: directory
 
-    - include_tasks: tasks/fastpackage.yml
+    - name: "Ensures required packages are installed"
+      include_role:
+        name: fastpackages
       vars:
-        package_name: "{{ item }}"
-      loop:
-        - unzip
-        - zip
-        - java-1.8.0-openjdk
-        - mailcap
+        packages_list:
+          - unzip
+          - zip
+          - java-1.8.0-openjdk
+          - mailcap
+
   tasks:
     - name: "Fix JCliff standard-sockets rule"
       template:
