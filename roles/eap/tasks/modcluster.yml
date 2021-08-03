@@ -1,0 +1,28 @@
+---
+- assert:
+    that:
+      - jboss_home is defined
+    quiet: true
+
+- set_fact:
+    jboss_proxies: "{{ jboss_proxies_list | default('proxy1') }}"
+
+- name: "Check if mod_cluster is properly activated"
+  command:
+    cmd: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command='/subsystem=modcluster/proxy=default:read-attribute(name=proxies)'"
+  changed_when: False
+  register: mod_cluster_state
+
+- debug:
+    msg: "{{ mod_cluster_state.stdout_lines | string }}"
+  when:
+    - mod_cluster_state_display is defined
+
+- name: "Activate mod_cluster on EAP"
+  command:
+    cmd: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command='/subsystem=modcluster/proxy=default:write-attribute(name=proxies,value=[{{ jboss_proxies }}])'"
+  changed_when: False
+  when:
+    - not jboss_proxies in (mod_cluster_state.stdout_lines | string)
+  notify:
+    - "Restart Systemd Service"

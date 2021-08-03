@@ -6,3 +6,6 @@
   service:
      name: "{{ eap_instance_name }}"
      state: restarted
+
+- name: "Activate modcluster"
+  include_tasks: tasks/modcluster.yml
