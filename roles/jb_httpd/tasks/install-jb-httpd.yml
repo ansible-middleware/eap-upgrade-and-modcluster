@@ -96,7 +96,10 @@
     state: started
     enabled: yes
 
-- name: Wait for port 80 to be open
+- name: "Wait for all used ports to be open"
   wait_for:
-    port: 80
+    port: "{{ item }}"
     delay: 5
+  loop:
+    - 80
+    - 6666
