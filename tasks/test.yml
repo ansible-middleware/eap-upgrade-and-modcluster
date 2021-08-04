@@ -1,0 +1,9 @@
+---
+- wait_for:
+    port: "{{ item.port }}"
+    delay: 0
+
+- get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.result }}"
+  changed_when: False
