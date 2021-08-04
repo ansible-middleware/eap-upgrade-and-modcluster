@@ -100,13 +100,14 @@
           path: "{{ app_path }}"
 
   post_tasks:
-    - get_url:
-        url: "{{ item.url }}"
-        dest: "{{ item.result }}"
-      changed_when: False
+    - include_tasks: roles/eap/tasks/restart_eap.yml
+      when:
+        - upgrade_eap_software_id is defined
+
+    - include_tasks: tasks/test.yml
       loop:
-        - { url: 'http://localhost:8080/info/', result: /tmp/jboss.txt }
-        - { url: 'http://localhost/info/', result: /tmp/httpd.txt }
+        - { url: 'http://localhost:8080/info/', port: 8080, result: /tmp/jboss.txt }
+        - { url: 'http://localhost/info/', port: 80, result: /tmp/httpd.txt }
 
   handlers:
     - name: "JCliff"

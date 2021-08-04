@@ -6,15 +6,16 @@
 
 - set_fact:
     jboss_proxies: "{{ jboss_proxies_list | default('proxy1') }}"
+    management_port: "9990 + {{ eap_port_range_shift | default('0') }}"
 
-- name: "Check if EAP management port is open"
+- name: "Check if EAP management port is open: {{ management_port }}"
   wait_for:
-    port: 9990
-    delay: 20
+    port: "{{ management_port }}"
+    delay: 0
 
 - name: "Check if mod_cluster is properly activated"
   command:
-    cmd: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command='/subsystem=modcluster/proxy=default:read-attribute(name=proxies)'"
+    cmd: "{{ jboss_home }}/bin/jboss-cli.sh --controller=localhost:{{ management_port }} --connect --command='/subsystem=modcluster/proxy=default:read-attribute(name=proxies)'"
   changed_when: False
   register: mod_cluster_state
 
@@ -25,7 +26,7 @@
 
 - name: "Activate mod_cluster on EAP"
   command:
-    cmd: "{{ jboss_home }}/bin/jboss-cli.sh --connect --command='/subsystem=modcluster/proxy=default:write-attribute(name=proxies,value=[{{ jboss_proxies }}])'"
+    cmd: "{{ jboss_home }}/bin/jboss-cli.sh --controller=localhost:{{ management_port }} --connect --command='/subsystem=modcluster/proxy=default:write-attribute(name=proxies,value=[{{ jboss_proxies }}])'"
   changed_when: False
   when:
     - not jboss_proxies in (mod_cluster_state.stdout_lines | string)
