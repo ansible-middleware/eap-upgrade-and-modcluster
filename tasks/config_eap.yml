@@ -1,0 +1,21 @@
+---
+- assert:
+    that:
+      - app_name is defined
+      - app_version is defined
+      - app_path is defined
+    quiet: true
+
+- set_fact:
+    eap_management_default_port: "{{ override_eap_management_default_port | default(9990) | int }}"
+    eap_port_range_shift: "{{ eap_port_range_shift | default(0) | int }}"
+
+- set_fact:
+    port: "{{ (eap_management_default_port | int) + (eap_port_range_shift | int) }}"
+
+- include_tasks: tasks/jcliff.yml
+  vars:
+    management_port: "{{ port }}"
+    app:
+      name: "{{ app_name }}-{{ app_version }}.war"
+      path: "{{ app_path }}"

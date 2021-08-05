@@ -30,12 +30,7 @@
         url: "{{ app_url }}"
         dest: "{{ app_path }}"
 
-    - include_tasks: tasks/jcliff.yml
-      vars:
-        management_port: "{{ 9990 + eap_port_range_shift }}"
-        app:
-          name: "{{ app_name }}-{{ app_version }}.war"
-          path: "{{ app_path }}"
+    - include_tasks: tasks/config_eap.yml
 
   post_tasks:
     - include_tasks: roles/eap/tasks/restart_eap.yml
@@ -49,9 +44,4 @@
 
   handlers:
     - name: "JCliff"
-      include_tasks: tasks/jcliff.yml
-      vars:
-        management_port: "{{ 9990 + eap_port_range_shift }}"
-        app:
-          name: "{{ app_name }}-{{ app_version }}.war"
-          path: "{{ app_path }}"
+      include_tasks: tasks/config_eap.yml
