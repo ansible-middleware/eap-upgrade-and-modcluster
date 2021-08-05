@@ -1,0 +1,42 @@
+---
+- assert:
+    that:
+      - ansible_distribution is defined
+      - ansible_distribution == "RedHat"
+
+- name: "Ensures required packages are installed"
+  include_role:
+    name: redhat_csp_download
+  when:
+  - not assumed_installed is defined
+
+- set_fact:
+     eap_port_range_shift: 0
+     eap_version: 7.2
+  when:
+    - upgrade_eap_software_id is not defined
+
+- set_fact:
+     eap_port_range_shift: 100
+     eap_version: 7.3
+  when:
+    - upgrade_eap_software_id is defined
+
+- set_fact:
+     jboss_home: "/opt/jboss-eap-{{ eap_version }}"
+     eap_instance_name: "jboss-eap-{{ eap_version }}"
+
+- name: "Ensure JBOSS installation directory exists: {{ jboss_install_dir }}"
+  file:
+     path: "{{ jboss_install_dir }}"
+     state: directory
+
+- name: "Ensures required packages are installed"
+  include_role:
+    name: fastpackages
+  vars:
+    packages_list:
+      - unzip
+      - zip
+      - java-1.8.0-openjdk
+      - mailcap
