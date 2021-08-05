@@ -1,0 +1,4 @@
+---
+collections:
+  - name: middleware_automations.redhat_csp_download
+  - name: middleware_automations.jcliff
