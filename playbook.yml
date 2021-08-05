@@ -1,29 +1,8 @@
 ---
 - hosts: all
   gather_facts: true
-  vars:
-    app_repository: /opt/apps
-    app_name: info
-    app_version: 1.0
-    app_filename: "{{ app_name }}-{{ app_version }}.war"
-    app_url: "http://people.redhat.com/~rpelisse/{{ app_filename }}"
-    app_path: "{{ app_repository }}/{{ app_filename }}"
-
-    # if gather_facts is set to true, the following variables can be removed
-#    ansible_distribution: RedHat
-#    ansible_os_family: RedHat
-#    ansible_pkg_mgr: yum
-#    ansible_distribution_version: 7.9
-    #####
-
-    jboss_user: jboss
-    jboss_group: jboss
-    jboss_install_dir: "{{ jboss_home | dirname }}"
-    eap_software_id: "{{ upgrade_eap_software_id | default('64311') }}"
-    eap_zipfile: "{{ app_repository }}/eap-{{ eap_software_id }}.zip"
-    eap_instance_name: "{{ override_eap_instance_name | default('jboss-eap') }}"
-    # To deploy 7.3 instead of 7.2: -e upgrade_eap_software_id=80101
-    rhn_eap_download_url: "https://access.redhat.com/jbossnetwork/restricted/softwareDownload.html?softwareId={{ eap_software_id }}"
+  vars_files:
+    - vars/jboss-eap.yml
   collections:
     - middleware_automation.redhat_csp_download
     - middleware_automation.jcliff
