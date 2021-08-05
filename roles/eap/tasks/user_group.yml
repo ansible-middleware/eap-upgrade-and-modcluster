@@ -1,0 +1,14 @@
+---
+- assert:
+    that:
+      - jboss_group is defined
+      - jboss_user is defined
+    quiet: true
+
+- group:
+    name: "{{ jboss_group }}"
+    state: present
+
+- user:
+    name: "{{ jboss_user }}"
+    state: present
