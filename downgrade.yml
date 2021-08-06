@@ -1,0 +1,23 @@
+---
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - vars/jboss-eap.yml
+  collections:
+    - middleware_automation.redhat_csp_download
+  pre_tasks:
+    - include_tasks: tasks/prep.yml
+  tasks:
+    - assert:
+        that:
+          - jboss_home is defined
+          - eap_instance_name is defined
+        quiet: true
+
+    - name: "Stop running server"
+      include_tasks: roles/eap/tasks/stop_eap.yml
+
+    - name: "Delete installation"
+      file:
+        path: "{{ jboss_home }}"
+        state: absent
