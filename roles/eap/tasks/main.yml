@@ -3,15 +3,14 @@
 
 - include_tasks: tasks/install_eap_from_rhn_zipfile.yml
 
-- include_tasks: tasks/set-up-wildfy-service.yml
+- include_role:
+    name: wildfly_systemd
   vars:
-    wildfly:
-      home: "{{ jboss_home }}"
-      user: "{{ jboss_user }}"
-      group: "{{ jboss_group }}"
-      pidfile: "{{ jboss_home }}/jboss.pid"
-      port_range_offset: "{{ eap_port_range_shift }}"
-      instance_name: "{{ eap_instance_name }}"
-      config:
-        name: eap.xml
-        base: standalone-ha.xml
+    wildfly: "wildfly"
+    wildfly_home: "{{ jboss_home }}"
+    wildfly_user: "{{ jboss_user }}"
+    wildfly_group: "{{ jboss_group }}"
+    wildfly_config_base: standalone-ha.xml
+    #    wildfly_basedir_prefix: "{{ wildfly.basedir_prefix }}"
+    wildfly_config_name: eap.xml
+    instance_name: eap
